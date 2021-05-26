@@ -1,25 +1,23 @@
 import * as React from "react";
-import { Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import Home from "./Screens/Home";
-import navigatePage from "./Screens/navigationPage.js";
-import Favorite from "./Screens/favoriteScreen";
+import searchStack from "../navigation/searchStack";
+import navigatePage from "./HomeStack.js";
+import favoriteStack from "./FavoriteStack";
 
 const Tab = createMaterialBottomTabNavigator();
 
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Feed"
+      initialRouteName="Home"
       activeColor="#708090"
       barStyle={{ backgroundColor: "#C0C0C0" }}
     >
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={navigatePage}
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ color }) => (
@@ -29,7 +27,7 @@ function MyTabs() {
       />
       <Tab.Screen
         name="Search"
-        component={navigatePage}
+        component={searchStack}
         options={{
           tabBarLabel: "Search",
           tabBarIcon: ({ color }) => (
@@ -39,7 +37,7 @@ function MyTabs() {
       />
       <Tab.Screen
         name="Favotite"
-        component={Favorite}
+        component={favoriteStack}
         options={{
           tabBarLabel: "Favorite",
           tabBarIcon: ({ color }) => (

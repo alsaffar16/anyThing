@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect, useCallback } from "react";
 import {
   useFonts,
@@ -17,7 +18,7 @@ import Loading from "./loadingScreen";
 import { useDispatch } from "react-redux";
 import { changeCity } from "../store/changes";
 
-export default function CityWeather(props) {
+export default function favoriteCity(props) {
   let [fontsLoaded] = useFonts({
     Comfortaa_400Regular,
     Comfortaa_500Medium,
@@ -31,7 +32,6 @@ export default function CityWeather(props) {
   const [tempreture, settempreture] = useState("");
   const [weatherState, setweatherState] = useState("");
   const [backColor, setbackColor] = useState("");
-
   const [icon, setIcon] = useState(" ");
 
   const dispatch = useDispatch();
@@ -168,31 +168,6 @@ export default function CityWeather(props) {
           }}
         >
           <Text style={styles.buttonText}>°F</Text>
-        </TouchableHighlight>
-      </View>
-
-      <View
-        style={{
-          marginTop: Dimensions.get("window").height * 0.25,
-        }}
-      >
-        <TouchableHighlight
-          style={{
-            borderRadius: 15,
-            backgroundColor: "#F38F38",
-            paddingHorizontal: 30,
-            textAlign: "center",
-            justifyContent: "center",
-            //alignContent: "center",
-          }}
-          onPress={() => {
-            dispatchHandler();
-            alert("City Added To Favorite");
-          }}
-        >
-          <Text style={[styles.buttonText, { marginTop: 10 }]}>
-            Add to favorite{" "}
-          </Text>
         </TouchableHighlight>
       </View>
     </View>

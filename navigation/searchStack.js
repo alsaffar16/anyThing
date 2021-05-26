@@ -1,13 +1,11 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { StatusBar } from "react-native";
 
-import CityWeather from "./CityWeather";
-import SearchScreen from "./SearchScreen";
+import CityWeather from "../Screens/CityWeather";
+import SearchScreen from "../Screens/SearchScreen";
 const Stack = createStackNavigator();
 
-export default function navigatePage() {
+export default function searchStack() {
   return (
     <Stack.Navigator initialRouteName="SearchScreen">
       <Stack.Screen name="SearchScreen" component={SearchScreen} />

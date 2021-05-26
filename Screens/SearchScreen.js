@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "react-native-elements";
+import {
+  useFonts,
+  Comfortaa_400Regular,
+  Comfortaa_500Medium,
+} from "@expo-google-fonts/comfortaa";
 
 import {
-  ActivityIndicator,
   StyleSheet,
   TouchableHighlight,
   Text,
   FlatList,
-  TouchableOpacity,
   View,
   Dimensions,
   TextInput,
-  Button,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { cities } from "../cities.js";
+import { useSelector } from "react-redux";
 
 export default function Search({ navigation }) {
-  //console.log(navigation);
+  let [fontsLoaded] = useFonts({
+    Comfortaa_400Regular,
+    Comfortaa_500Medium,
+  });
 
+  const cities = useSelector((state) => {
+    return state.cities.cities;
+  });
   const [search, setSearch] = useState("");
-
-  const [cityName, setCity] = useState("");
   const [filteredDataSource, setFilteredDataSource] = useState(cities);
   const [masterDataSource, setMasterDataSource] = useState(cities);
-  //console.log(cities);
 
   const searchFilterFunction = (text) => {
     if (text) {
@@ -60,10 +63,35 @@ export default function Search({ navigation }) {
           renderItem={({ item }) => (
             <View style={{}}>
               <TouchableHighlight
-                onPress={() => navigation.navigate("CityWeather", item.name)}
-                style={[styles.city, { backgroundColor: "#C0C0C0" }]}
+                onPress={() =>
+                  navigation.navigate("CityWeather", {
+                    name: item.name,
+                    id: item.geonameid,
+                  })
+                }
+                style={[
+                  styles.city,
+                  { backgroundColor: "#49a9bf", padding: 10 },
+                ]}
               >
-                <Text style={styles.text}>{item.name}</Text>
+                <View style={{ flexDirection: "column" }}>
+                  <Text
+                    style={[
+                      styles.text,
+                      { fontFamily: "Comfortaa_500Medium", fontSize: 25 },
+                    ]}
+                  >
+                    {item.name}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.text,
+                      { fontFamily: "Comfortaa_400Regular", fontSize: 17 },
+                    ]}
+                  >
+                    {item.country}
+                  </Text>
+                </View>
               </TouchableHighlight>
             </View>
           )}
@@ -77,14 +105,14 @@ const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: "column",
     alignContent: "center",
-    marginLeft: 10,
+    marginLeft: 18,
   },
   textInput: {
     height: 50,
     width: Dimensions.get("window").width * 0.8,
     borderColor: "#708090",
     borderWidth: 1.5,
-    marginTop: 90,
+    marginTop: Dimensions.get("window").width * 0.05,
     marginLeft: Dimensions.get("window").width * 0.05,
     borderRadius: 15,
     shadowColor: "#000",
@@ -97,6 +125,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6.68,
     fontSize: 20,
     textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    flexDirection: "column",
   },
 
   city: {
@@ -108,6 +139,14 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 20,
     textAlign: "center",
+    fontFamily: "Comfortaa_500Medium",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.36,
+    shadowRadius: 6.68,
   },
 
   button: {
@@ -131,7 +170,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   text: {
-    fontSize: 25,
     textAlign: "center",
     justifyContent: "center",
   },

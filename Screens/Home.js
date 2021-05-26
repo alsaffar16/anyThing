@@ -1,13 +1,16 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  useFonts,
+  Comfortaa_400Regular,
+  Comfortaa_500Medium,
+} from "@expo-google-fonts/comfortaa";
 import {
   StyleSheet,
   TouchableHighlight,
   Text,
-  FlatList,
-  TouchableOpacity,
+  Image,
   View,
   Dimensions,
   Button,
@@ -15,6 +18,10 @@ import {
 import Loading from "./loadingScreen";
 
 export default function App() {
+  let [fontsLoaded] = useFonts({
+    Comfortaa_400Regular,
+    Comfortaa_500Medium,
+  });
   const forcast = [
     { key: "0", day: "Sunday", data: "25/5/2021", min: "25", max: "50" },
     { key: "1", day: "Mon", data: "25/5/2021", min: "25", max: "32" },
@@ -27,8 +34,9 @@ export default function App() {
   const [location, setLocation] = useState({});
   const [errorMsg, setErrorMsg] = useState("");
   const [tempreture, settempreture] = useState("");
-  const [weatherState, setweatherState] = useState("Rain");
-  const [backColor, setbackColor] = useState("");
+  const [weatherState, setweatherState] = useState("");
+  const [backColor, setbackColor] = useState("#fff");
+  const [icon, setIcon] = useState(" ");
 
   useEffect(() => {
     (async () => {
@@ -57,18 +65,23 @@ export default function App() {
       .then((response) => response.json())
       .then((responseJson) => {
         settempreture(responseJson.current.temp);
-
-        setweatherState(responseJson.current.weather[0].main);
-        backroundCol();
+        setweatherState(responseJson.current.weather[0].main.toString());
+        backroundCol(responseJson.current.weather[0].main);
+        setIcon(
+          "http://openweathermap.org/img/wn/" +
+            responseJson.current.weather[0].icon +
+            "@2x.png"
+        );
         setLoading(false);
       });
   }
 
-  function backroundCol() {
-    if (weatherState == "Clouds") setbackColor("#d0cccc");
-    else if (weatherState == "Sunny") setbackColor("#F2F27A");
-    else if (weatherState == "Rain") setbackColor("#AFC3CC");
-    else if (weatherState == "Snow") setbackColor("#fffafa");
+  function backroundCol(state) {
+    if (state == "Clouds") setbackColor("#d0cccc");
+    else if (state === "Sunny") setbackColor("#F2F27A");
+    else if (state === "Rain") setbackColor("#AFC3CC");
+    else if (state === "Snow") setbackColor("#fffafa");
+    else if (state === "Clear") setbackColor("#66bbdd");
   }
 
   let text = "Waiting..";
@@ -81,28 +94,48 @@ export default function App() {
   return loading ? (
     Loading()
   ) : (
-    <View style={[styles.MainContainer, { backgroundColor: backColor }]}>
-      <View style={styles.currentInfo}>
+    <View style={[styles.MainContainer]}>
+      <View style={[styles.currentInfo, { backgroundColor: backColor }]}>
+        <View style={{ flexDirection: "column", flex: 1, textAlign: "center" }}>
+          <Image
+            source={{
+              uri: icon.toString(),
+            }}
+            style={{
+              width: Dimensions.get("window").width * 0.4,
+              height: Dimensions.get("window").height * 0.1,
+              // marginLeft: Dimensions.get("window").width * 0.7,
+              marginTop: Dimensions.get("window").height * 0.02,
+            }}
+          />
+          <Text
+            style={{
+              fontSize: 30,
+              alignContent: "center",
+              fontFamily: "Comfortaa_400Regular",
+              marginLeft: Dimensions.get("window").width * 0.12,
+              marginTop: Dimensions.get("window").height * 0.01,
+              fontSize: 20,
+              paddingRight: 150,
+            }}
+          >
+            {weatherState}
+          </Text>
+        </View>
+
         <Text
           style={{
             fontSize: 30,
-            marginTop: 250,
+            fontFamily: "Comfortaa_500Medium",
+            marginLeft: Dimensions.get("window").width * 0.3,
+            marginRight: Dimensions.get("window").width * 0.1,
+            marginTop: Dimensions.get("window").height * 0.06,
             alignContent: "center",
+            justifyContent: "center",
+            flex: 1,
           }}
         >
-          {weatherState}
-        </Text>
-        <Text
-          style={{
-            fontSize: 35,
-            fontWeight: "bold",
-            marginLeft: 20,
-            marginTop: 250,
-            alignContent: "center",
-          }}
-        >
-          {" "}
-          °{tempreture}{" "}
+          °{tempreture}
         </Text>
       </View>
 
@@ -150,24 +183,17 @@ export default function App() {
         </TouchableHighlight>
       </View>
 
-      <View style={{ flexDirection: "column", marginTop: 150 }}>
-        <FlatList
-          data={forcast}
-          keyExtractor={(item, index) => item.key}
-          renderItem={({ item }) => (
-            <View>
-              <Text style={{ fontSize: 25 }}>{item.day}</Text>
-              <Text style={{ fontSize: 20 }}>{item.max}</Text>
-            </View>
-          )}
-        />
-      </View>
+      <View
+        style={{
+          marginTop: Dimensions.get("window").height * 0.3,
+        }}
+      ></View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   MainContainer: {
+    marginTop: Dimensions.get("window").height * 0.1,
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
@@ -175,6 +201,12 @@ const styles = StyleSheet.create({
 
   currentInfo: {
     flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
+    paddingBottom: Dimensions.get("window").width * 0.04,
+    marginHorizontal: Dimensions.get("window").width * 0.02,
+    fontFamily: "Comfortaa_400Regular",
+    borderRadius: 20,
   },
 
   buttonContainer: {
@@ -190,6 +222,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: Dimensions.get("window").height * 0.027,
     marginLeft: 10,
+    fontFamily: "Comfortaa_400Regular",
   },
   buttonText: {
     color: "#FFFFE0",
@@ -197,6 +230,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     justifyContent: "center",
     fontSize: 27,
+    fontFamily: "Comfortaa_400Regular",
   },
 
   temp: {
@@ -204,5 +238,6 @@ const styles = StyleSheet.create({
     position: "relative",
     marginVertical: Dimensions.get("window").height * 0.027,
     fontSize: 43,
+    fontFamily: "Comfortaa_400Regular",
   },
 });
