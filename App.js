@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { NavigationContainer, View, Button } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
+import {
+  StyleSheet,
+  TouchableHighlight,
+  Text,
+  View,
+  Dimensions,
+  TextInput,
+} from "react-native";
 import MyTabs from "./navigation/tabs";
 import { createStore, combineReducers } from "redux";
 import { Provider } from "react-redux";
 import cityReducer from "./store/changeReducer";
-import RNPhoneCodeSelect from "react-native-phone-code-select";
+import LogIn from "./Screens/LogIn";
+import Athinticateion from "./Screens/Authintecation";
+import AppContainer from "./navigation/switchNavigation";
 
 const rootReducer = combineReducers({
   cities: cityReducer,
@@ -16,7 +26,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <MyTabs />
+        <AppContainer />
       </NavigationContainer>
     </Provider>
   );

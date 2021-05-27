@@ -11,7 +11,6 @@ import {
   Image,
   View,
   Dimensions,
-  Button,
 } from "react-native";
 import Loading from "./loadingScreen";
 import { useDispatch } from "react-redux";

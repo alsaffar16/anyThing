@@ -9,11 +9,13 @@ import {
   View,
   Dimensions,
 } from "react-native";
+import firebase from "firebase";
 
 export default function Loading() {
   const LoadingIcon = ({ isIconAnimating }) => (
     <ActivityIndicator size="large" color="#fff" animating={isIconAnimating} />
   );
+
   return (
     <View style={styles.MainContainer}>
       <ActivityIndicator size="large" />

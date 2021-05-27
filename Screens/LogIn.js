@@ -4,31 +4,135 @@ import {
   Comfortaa_400Regular,
   Comfortaa_500Medium,
 } from "@expo-google-fonts/comfortaa";
-import RNPhoneCodeSelect from "react-native-phone-code-select";
+import { firebaseConfig } from "../config";
+import firebase from "firebase";
+import {
+  FirebaseRecaptchaVerifierModal,
+  FirebaseRecaptchaBanner,
+} from "expo-firebase-recaptcha";
 import {
   StyleSheet,
   TouchableHighlight,
   Text,
-  Image,
+  TextInput,
   View,
   Dimensions,
-  Button,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 
-export default function logIn() {
-  const [visible, setVisible] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState(null);
+export default function LogIn({ navigation }) {
+  let [fontsLoaded] = useFonts({
+    Comfortaa_400Regular,
+    Comfortaa_500Medium,
+  });
+  const recaptchaVerifier = React.useRef(null);
+  const attemptInvisibleVerification = false;
+  const [phoneNum, setPhone] = useState(" ");
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  } else {
+    firebase.app();
+  }
+
   return (
-    <View style={styles.container}>
-      <Button onPress={() => setVisible(true)} title="Show Modal" />
-      <RNPhoneCodeSelect
-        visible={visible}
-        onDismiss={() => setVisible(false)}
-        onCountryPress={(country) => setSelectedCountry(country)}
-        primaryColor="#f04a4a"
-        secondaryColor="#000000"
-        buttonText="Ok"
-      />
-    </View>
+    <TouchableWithoutFeedback
+      onPress={Keyboard.dismiss}
+      accessible={false}
+      style={{}}
+    >
+      <View style={styles.mainContainer}>
+        <FirebaseRecaptchaVerifierModal
+          ref={recaptchaVerifier}
+          firebaseConfig={firebaseConfig}
+          attemptInvisibleVerification={attemptInvisibleVerification}
+        />
+        <View style={{ alignItems: "center", flexDirection: "row" }}>
+          <TextInput
+            keyboardType="numeric"
+            onChangeText={(text) => {
+              setPhone(text);
+              //console.log(text);
+            }}
+            style={styles.textInput}
+            underlineColorAndroid="transparent"
+            placeholder="966xxxxxxxxx"
+          />
+        </View>
+
+        <View
+          style={{
+            marginTop: Dimensions.get("window").height * 0.05,
+          }}
+        >
+          <TouchableHighlight
+            style={{
+              borderRadius: 15,
+              backgroundColor: "#F38F38",
+              paddingHorizontal: Dimensions.get("window").width * 0.05,
+              marginHorizontal: Dimensions.get("window").width * 0.05,
+              textAlign: "center",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+            onPress={() => {
+              firebase
+                .auth()
+                .signInWithPhoneNumber(
+                  "+" + phoneNum,
+                  recaptchaVerifier.current
+                )
+                .then((result) => {
+                  //console.log(result);
+                  navigation.navigate("verify", {
+                    id: result.verificationId,
+                  });
+                  (error) => {
+                    Alert(error.message);
+                  };
+                });
+            }}
+          >
+            <Text style={[styles.buttonText, { marginTop: 10 }]}>Next </Text>
+          </TouchableHighlight>
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    flexDirection: "column",
+    alignContent: "center",
+    justifyContent: "center",
+    marginLeft: 18,
+    //padding: Dimensions.get("window").height
+  },
+  textInput: {
+    height: Dimensions.get("window").width * 0.15,
+    width: Dimensions.get("window").width * 0.85,
+    borderColor: "#708090",
+    borderWidth: 1.5,
+    fontSize: 25,
+    fontFamily: "Comfortaa_400Regular",
+    marginTop: Dimensions.get("window").width * 0.5,
+    marginHorizontal: Dimensions.get("window").width * 0.05,
+    borderRadius: 15,
+    shadowColor: "#000",
+    textAlign: "center",
+    marginBottom: 20,
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+  },
+  buttonText: {
+    color: "#FFFFE0",
+    height: 50,
+    textAlign: "center",
+    justifyContent: "center",
+    fontSize: 27,
+    fontFamily: "Comfortaa_400Regular",
+  },
+});

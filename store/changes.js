@@ -6,3 +6,10 @@ export function changeCity(cityID) {
     cityID: cityID,
   };
 }
+
+export const LoggedIn = (user) => {
+  return {
+    type: "LOGGEDIN",
+    payload: user,
+  };
+};
