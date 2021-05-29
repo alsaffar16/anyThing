@@ -9,18 +9,22 @@ import {
   TextInput,
 } from "react-native";
 import MyTabs from "./navigation/tabs";
-import { createStore, combineReducers } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
-import cityReducer from "./store/changeReducer";
+import cityReducer from "./store/reducers/cityReducers";
+import uidReducer from "./store/reducers/uidReducers";
 import LogIn from "./Screens/LogIn";
 import Athinticateion from "./Screens/Authintecation";
 import AppContainer from "./navigation/switchNavigation";
+import ReduxThunk from "redux-thunk";
 
 const rootReducer = combineReducers({
   cities: cityReducer,
+  userID: uidReducer,
+
 });
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
 export default function App() {
   return (

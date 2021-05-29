@@ -16,9 +16,16 @@ import {
 } from "react-native";
 import Loading from "./loadingScreen";
 import { useDispatch } from "react-redux";
-import { changeCity } from "../store/changes";
+import { deleteCity } from "../store/actions/city";
+import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import db from "../firestore/firestore";
 
 export default function favoriteCity(props) {
+  const uid = useSelector((state) => {
+    return state.userID.uid;
+  });
+  const navigation = useNavigation();
   let [fontsLoaded] = useFonts({
     Comfortaa_400Regular,
     Comfortaa_500Medium,
@@ -37,7 +44,7 @@ export default function favoriteCity(props) {
   const dispatch = useDispatch();
 
   const dispatchHandler = useCallback(() => {
-    dispatch(changeCity(props.route.params.id));
+    dispatch(deleteCity(props.route.params.id));
   }, [dispatch, props.route.params.id]);
 
   useEffect(() => {
@@ -168,6 +175,39 @@ export default function favoriteCity(props) {
           }}
         >
           <Text style={styles.buttonText}>°F</Text>
+        </TouchableHighlight>
+      </View>
+      <View
+        style={{
+          marginTop: Dimensions.get("window").height * 0.25,
+        }}
+      >
+        <TouchableHighlight
+          style={{
+            borderRadius: 15,
+            backgroundColor: "#ff3232",
+            paddingHorizontal: 30,
+            textAlign: "center",
+            justifyContent: "center",
+            //alignContent: "center",
+          }}
+          onPress={ async ()  =>  {
+            console.log("hello");
+           const cityQuery = await db.collection("favoriteCities").where("userID", "==", uid).
+           where("cityID", "==",props.route.params.id).get();
+           cityQuery.forEach(doc =>{
+            console.log(doc.data().cityName);
+            doc.ref.delete();
+           });
+           dispatchHandler();
+           navigation.navigate("Favorite Cities");
+           alert("City Deleted from Favorite");
+
+          }}
+        >
+          <Text style={[styles.buttonText, { marginTop: 10 }]}>
+            Delete from favorite{" "}
+          </Text>
         </TouchableHighlight>
       </View>
     </View>

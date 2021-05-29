@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
 import * as Location from "expo-location";
 import {
   useFonts,
@@ -16,14 +16,20 @@ import {
   Button,
 } from "react-native";
 import Loading from "./loadingScreen";
+import { useSelector,useDispatch } from "react-redux";
+import {fetchFavotites} from "../store/actions/city";
 
 export default function App() {
+  const uid = useSelector((state) => {
+    return state.userID.uid;
+  });
+  const dispatch = useDispatch();
   let [fontsLoaded] = useFonts({
     Comfortaa_400Regular,
     Comfortaa_500Medium,
   });
   const forcast = [
-    { key: "0", day: "Sunday", data: "25/5/2021", min: "25", max: "50" },
+    { key: "0", day: "Sun", data: "25/5/2021", min: "25", max: "50" },
     { key: "1", day: "Mon", data: "25/5/2021", min: "25", max: "32" },
     { key: "2", day: "Tue", data: "25/5/2021", min: "25", max: "55" },
     { key: "3", day: "Wed", data: "25/5/2021", min: "25", max: "100" },
@@ -37,23 +43,31 @@ export default function App() {
   const [weatherState, setweatherState] = useState("");
   const [backColor, setbackColor] = useState("#fff");
   const [icon, setIcon] = useState(" ");
-
+  const[cityID, setCityId] = useState("");   
+  const [favoriteCity, setfavoriteCity] = useState([]);
   useEffect(() => {
+    dispatch(fetchFavotites(uid));
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
-        return;
+        return;        
       }
 
       let location = await Location.getCurrentPositionAsync({});
 
       setLocation(location);
       getWheatherData(location);
+       
     })();
+
+    
   }, []);
 
+  
+
   function getWheatherData(location) {
+   
     fetch(
       "https://api.openweathermap.org/data/2.5/onecall?lat=" +
         location.coords.latitude +
@@ -73,6 +87,7 @@ export default function App() {
             "@2x.png"
         );
         setLoading(false);
+        console.log(uid);
       });
   }
 

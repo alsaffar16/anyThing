@@ -14,9 +14,17 @@ import {
 } from "react-native";
 import Loading from "./loadingScreen";
 import { useDispatch } from "react-redux";
-import { changeCity } from "../store/changes";
+import { changeCity } from "../store/actions/city";
+import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import db from "../firestore/firestore";
+
 
 export default function CityWeather(props) {
+  const navigation = useNavigation();
+  const uid = useSelector((state) => {
+    return state.userID.uid;
+  });
   let [fontsLoaded] = useFonts({
     Comfortaa_400Regular,
     Comfortaa_500Medium,
@@ -30,14 +38,14 @@ export default function CityWeather(props) {
   const [tempreture, settempreture] = useState("");
   const [weatherState, setweatherState] = useState("");
   const [backColor, setbackColor] = useState("");
-
   const [icon, setIcon] = useState(" ");
 
   const dispatch = useDispatch();
-
   const dispatchHandler = useCallback(() => {
     dispatch(changeCity(props.route.params.id));
   }, [dispatch, props.route.params.id]);
+
+  
 
   useEffect(() => {
     (async () => {
@@ -185,6 +193,12 @@ export default function CityWeather(props) {
             //alignContent: "center",
           }}
           onPress={() => {
+            db.collection('favoriteCities').add({
+              userID: uid,
+              cityID: props.route.params.id,
+              cityName: props.route.params.name
+            }).then(result => navigation.navigate("SearchScreen"))
+            .catch(error => console.log(error))
             dispatchHandler();
             alert("City Added To Favorite");
           }}

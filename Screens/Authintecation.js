@@ -1,17 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Keyboard,
   Dimensions,
   Alert,
   TouchableWithoutFeedback,
 } from "react-native";
-import { StyleSheet, View, AsyncStorage } from "react-native";
+import {
+  useFonts,
+  Comfortaa_400Regular,
+  Comfortaa_500Medium,
+} from "@expo-google-fonts/comfortaa";
+import { StyleSheet, View } from "react-native";
 import SMSVerifyCode from "react-native-sms-verifycode";
 import { firebaseConfig } from "../config";
 import firebase from "firebase";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, StackActions } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { userID } from "../store/actions/uid";
+
 
 export default function Athinticateion(props) {
+  let [fontsLoaded] = useFonts({
+    Comfortaa_400Regular,
+    Comfortaa_500Medium,
+  });
+
+const [uid,setUid] = useState("");
+ 
+function setUIDSync(id){
+  setUid(prevUid => prevUid+ id);
+  console.log(id);
+}
+
+useEffect (()=> {
+  if(uid !=""){
+    console.log(uid);
+    dispatchHandler();
+    navigation.replace('Home');
+  }
+},[uid])
+  const dispatch = useDispatch();
+  const dispatchHandler = useCallback(() => {
+    dispatch(userID(uid));
+  }, [dispatch, uid]);
+
   const navigation = useNavigation();
   const [message, showMessage] = React.useState(
     !firebaseConfig || Platform.OS === "web"
@@ -25,16 +57,15 @@ export default function Athinticateion(props) {
   } else {
     firebase.app();
   }
-  //firebase.auth().onAuthStateChanged(onAuthStateChanged);
+  
 
   // const onAuthStateChanged = (user) => {
   //   this.setState({ isAuthinticationReady: true });
   //   this.setState({ isAthinticated: !!user });
   // };
 
-  onInputCompleted = async (text) => {
-    console.log(text, props.route.params.id);
-
+  const onInputCompleted = async (text) => {
+    
     try {
       const credential = firebase.auth.PhoneAuthProvider.credential(
         props.route.params.id,
@@ -42,8 +73,14 @@ export default function Athinticateion(props) {
       );
 
       await firebase.auth().signInWithCredential(credential);
-      console.log("sucess");
-      navigation.navigate("Home", { screen: "Home" });
+      firebase.auth().onAuthStateChanged((user) => {
+        if(user){
+          setUid(user.uid);   
+          
+          
+        }
+      });
+      
     } catch (err) {
       showMessage({ text: `Error: ${err.message}`, color: "red" });
     }
@@ -66,6 +103,7 @@ export default function Athinticateion(props) {
       <View style={styles.mainContainer}>
         <View style={styles.code}>
           <SMSVerifyCode
+            autoFocus = {true}
             containerPaddingVertical={40}
             containerPaddingRight={58}
             containerPaddingLeft={20}
@@ -89,10 +127,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   code: {
+    paddingVertical: Dimensions.get('window').height*0.2,
     width: "90%",
     height: "25%",
     borderRadius: 10,
     borderWidth: 1.5,
+    backgroundColor:"blue",
     borderColor: "#49a9bf",
     //paddingRight: Dimensions.get("window").height * 0.3,
     marginHorizontal: Dimensions.get("window").width * 0.03,

@@ -14,6 +14,13 @@ export default function Favorite({ navigation }) {
     return state.cities.favoriteCities;
   });
   return (
+    cities.length===0?
+    <View style={{alignItems:"center",justifyContent:"center", textAlign:"center",
+     marginTop: Dimensions.get("window").height*0.35,
+     }}>
+      <Text style={{textAlign: "center", fontSize:30,
+    fontFamily: "Comfortaa_500Medium",}}>No Favorites</Text>
+    </View>:
     <View
       style={{
         flex: 1,
