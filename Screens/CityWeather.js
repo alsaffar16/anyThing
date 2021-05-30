@@ -19,7 +19,6 @@ import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import db from "../firestore/firestore";
 
-
 export default function CityWeather(props) {
   const navigation = useNavigation();
   const uid = useSelector((state) => {
@@ -45,8 +44,6 @@ export default function CityWeather(props) {
     dispatch(changeCity(props.route.params.id));
   }, [dispatch, props.route.params.id]);
 
-  
-
   useEffect(() => {
     (async () => {
       setCity(props.route.params.name);
@@ -56,10 +53,11 @@ export default function CityWeather(props) {
 
   function getWheatherData(city) {
     setFetching(true);
+
     fetch(
-      "http://api.openweathermap.org/data/2.5/weather?q=" +
-        props.route.params.name.toString() +
-        "&limit=5&units=metric&appid&appid=ef068df682a43913b9d1fadd684d3571",
+      "https://us-central1-hussain-81aaf.cloudfunctions.net/getWeatherCity?cityName=" +
+        props.route.params.name +
+        "",
       { method: "GET" }
     )
       .then((response) => response.json())
@@ -75,6 +73,10 @@ export default function CityWeather(props) {
         );
 
         backroundCol(responseJson.weather[0].main);
+      })
+      .catch((err) => {
+        alert("No information about this city");
+        navigation.navigate("SearchScreen");
       });
   }
 
@@ -193,12 +195,14 @@ export default function CityWeather(props) {
             //alignContent: "center",
           }}
           onPress={() => {
-            db.collection('favoriteCities').add({
-              userID: uid,
-              cityID: props.route.params.id,
-              cityName: props.route.params.name
-            }).then(result => navigation.navigate("SearchScreen"))
-            .catch(error => console.log(error))
+            db.collection("favoriteCities")
+              .add({
+                userID: uid,
+                cityID: props.route.params.id,
+                cityName: props.route.params.name,
+              })
+              .then((result) => navigation.navigate("SearchScreen"))
+              .catch((error) => console.log(error));
             dispatchHandler();
             alert("City Added To Favorite");
           }}

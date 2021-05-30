@@ -1,4 +1,4 @@
-import React, { useRef ,useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   useFonts,
   Comfortaa_400Regular,
@@ -14,7 +14,7 @@ import {
   StyleSheet,
   TouchableHighlight,
   Text,
-  TextInput,
+  Alert,
   View,
   Dimensions,
   Keyboard,
@@ -30,19 +30,18 @@ export default function LogIn() {
     Comfortaa_500Medium,
   });
   const recaptchaVerifier = React.useRef(null);
-  const attemptInvisibleVerification = false;
+  const attemptInvisibleVerification = true;
   const [phoneNum, setPhone] = useState(" ");
   const [value, setValue] = useState("");
   const [formattedValue, setFormattedValue] = useState("");
   const [valid, setValid] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
-  const phoneInput = useRef<PhoneInput>(null);
+  const phoneInput = useRef < PhoneInput > null;
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   } else {
     firebase.app();
   }
-
 
   return (
     <TouchableWithoutFeedback
@@ -51,37 +50,48 @@ export default function LogIn() {
       style={{}}
     >
       <View style={styles.mainContainer}>
-        <FirebaseRecaptchaVerifierModal
-          ref={recaptchaVerifier}
-          firebaseConfig={firebaseConfig}
-          attemptInvisibleVerification={attemptInvisibleVerification}
-        />
-        <View style={{backgroundColor:"#E3E2E2",
-         paddingVertical:Dimensions.get('window').height*0.07,
-         marginTop: Dimensions.get('window').height*0.16,
-         borderRadius:20,
-         marginHorizontal:Dimensions.get('window').width*0.05,
-         }}>
-        <View style={{  flexDirection: "row" }}>
-          <View style={{marginHorizontal:Dimensions.get('window').width*0.05}}>
-        <PhoneInput
-           // ref={phoneInput}
-            defaultValue={value}
-            defaultCode="SA"
-            layout="first"
-            onChangeText={(text) => {
-              setValue(text);
-            }}
-            onChangeFormattedText={(text) => {
-              setFormattedValue(text);
-              
-            }}
-            withDarkTheme
-            withShadow
-            autoFocus
+        {
+          <FirebaseRecaptchaVerifierModal
+            ref={recaptchaVerifier}
+            firebaseConfig={firebaseConfig}
+            attemptInvisibleVerification={attemptInvisibleVerification}
           />
-          </View>
-          {/* <TextInput
+        }
+
+        <View
+          style={{
+            backgroundColor: "#E3E2E2",
+            paddingVertical: Dimensions.get("window").height * 0.07,
+            marginTop: Dimensions.get("window").height * 0.16,
+            borderRadius: 20,
+            marginHorizontal: Dimensions.get("window").width * 0.05,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <View
+              style={{
+                marginHorizontal: Dimensions.get("window").width * 0.05,
+              }}
+            >
+              <PhoneInput
+                // ref={phoneInput}
+                defaultValue={value}
+                defaultCode="SA"
+                layout="first"
+                //containerStyle={{ borderRadius: 10 }}
+                onChangeText={(text) => {
+                  setValue(text);
+                }}
+                onChangeFormattedText={(text) => {
+                  setFormattedValue(text);
+                }}
+                withDarkTheme
+                withShadow
+                autoFocus
+                //containerStyle={{ borderRadius: 10 }}
+              />
+            </View>
+            {/* <TextInput
             keyboardType="numeric"
             onChangeText={(text) => {
               setPhone(text);
@@ -91,46 +101,48 @@ export default function LogIn() {
             //underlineColorAndroid="transparent"
             placeholder="966xxxxxxxxx"
           /> */}
-        </View>
+          </View>
 
-        <View
-          style={{
-            marginTop: Dimensions.get("window").height * 0.05,
-            marginHorizontal: Dimensions.get("window").width * 0.05,
-          }}
-        >
-          <TouchableHighlight
+          <View
             style={{
-              borderRadius: 15,
-              backgroundColor: "#F38F38",
-              //paddingHorizontal: Dimensions.get("window").width * 0.05,
-              //marginRight: Dimensions.get("window").width * 0.05,
-              textAlign: "center",
-              //justifyContent: "center",
-              //alignContent: "center",
-            }}
-            onPress={() => {
-              firebase
-                .auth()
-                .signInWithPhoneNumber(
-                  formattedValue,
-                  recaptchaVerifier.current
-                )
-                .then((result) => {
-                  //console.log(result);
-                  navigation.navigate("verify", {
-                    id: result.verificationId,
-
-                  });
-                  (error) => {
-                    Alert(error.message);
-                  };
-                });
+              marginTop: Dimensions.get("window").height * 0.05,
+              marginHorizontal: Dimensions.get("window").width * 0.05,
             }}
           >
-            <Text style={[styles.buttonText, { marginTop: 10 }]}>Next </Text>
-          </TouchableHighlight>
-        </View>
+            <TouchableHighlight
+              style={{
+                borderRadius: 15,
+                backgroundColor: "#F38F38",
+                //paddingHorizontal: Dimensions.get("window").width * 0.05,
+                //marginRight: Dimensions.get("window").width * 0.05,
+                textAlign: "center",
+                //justifyContent: "center",
+                //alignContent: "center",
+              }}
+              onPress={() => {
+                firebase
+                  .auth()
+                  .signInWithPhoneNumber(
+                    formattedValue,
+                    recaptchaVerifier.current
+                  )
+                  .then((result) => {
+                    //console.log(result);
+                    navigation.navigate("verify", {
+                      id: result.verificationId,
+                    });
+                    (error) => {
+                      alert(error.message);
+                    };
+                  })
+                  .catch((error) => {
+                    alert(error.message);
+                  });
+              }}
+            >
+              <Text style={[styles.buttonText, { marginTop: 10 }]}>Next </Text>
+            </TouchableHighlight>
+          </View>
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -145,7 +157,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     //marginLeft: 18,
-    
+
     //padding: Dimensions.get("window").height
   },
   textInput: {

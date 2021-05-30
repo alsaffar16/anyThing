@@ -22,7 +22,7 @@ export default function Loading() {
       <View>
         <Text style={{ fontSize: 20, color: "blue" }}>
           {" "}
-          please wait while getting your location{" "}
+          please wait while getting the location{" "}
         </Text>
       </View>
     </View>

@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect,useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import * as Location from "expo-location";
 import {
   useFonts,
@@ -16,8 +16,9 @@ import {
   Button,
 } from "react-native";
 import Loading from "./loadingScreen";
-import { useSelector,useDispatch } from "react-redux";
-import {fetchFavotites} from "../store/actions/city";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchFavotites } from "../store/actions/city";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 export default function App() {
   const uid = useSelector((state) => {
@@ -43,7 +44,7 @@ export default function App() {
   const [weatherState, setweatherState] = useState("");
   const [backColor, setbackColor] = useState("#fff");
   const [icon, setIcon] = useState(" ");
-  const[cityID, setCityId] = useState("");   
+  const [cityID, setCityId] = useState("");
   const [favoriteCity, setfavoriteCity] = useState([]);
   useEffect(() => {
     dispatch(fetchFavotites(uid));
@@ -51,33 +52,29 @@ export default function App() {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
-        return;        
+        return;
       }
 
       let location = await Location.getCurrentPositionAsync({});
 
       setLocation(location);
       getWheatherData(location);
-       
     })();
-
-    
   }, []);
 
-  
-
   function getWheatherData(location) {
-   
+    //console.log(location.coords.latitude);
+    //console.log(location.coords.longitude);
     fetch(
-      "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+      "https://us-central1-hussain-81aaf.cloudfunctions.net/getWeatherLoacation?latitude=" +
         location.coords.latitude +
-        "&lon=" +
-        location.coords.longitude +
-        "&units=metric&exclude=hourly,daily&appid=ef068df682a43913b9d1fadd684d3571",
+        "&longitude=" +
+        location.coords.longitude,
       { method: "GET" }
     )
       .then((response) => response.json())
       .then((responseJson) => {
+        //console.log(responseJson);
         settempreture(responseJson.current.temp);
         setweatherState(responseJson.current.weather[0].main.toString());
         backroundCol(responseJson.current.weather[0].main);

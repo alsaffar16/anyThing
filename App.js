@@ -21,7 +21,6 @@ import ReduxThunk from "redux-thunk";
 const rootReducer = combineReducers({
   cities: cityReducer,
   userID: uidReducer,
-
 });
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));

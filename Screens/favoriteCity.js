@@ -57,9 +57,9 @@ export default function favoriteCity(props) {
   function getWheatherData(city) {
     setFetching(true);
     fetch(
-      "http://api.openweathermap.org/data/2.5/weather?q=" +
-        props.route.params.name.toString() +
-        "&limit=5&units=metric&appid&appid=ef068df682a43913b9d1fadd684d3571",
+      "https://us-central1-hussain-81aaf.cloudfunctions.net/getWeatherCity?cityName=" +
+        props.route.params.name +
+        "",
       { method: "GET" }
     )
       .then((response) => response.json())
@@ -191,18 +191,20 @@ export default function favoriteCity(props) {
             justifyContent: "center",
             //alignContent: "center",
           }}
-          onPress={ async ()  =>  {
+          onPress={async () => {
             console.log("hello");
-           const cityQuery = await db.collection("favoriteCities").where("userID", "==", uid).
-           where("cityID", "==",props.route.params.id).get();
-           cityQuery.forEach(doc =>{
-            console.log(doc.data().cityName);
-            doc.ref.delete();
-           });
-           dispatchHandler();
-           navigation.navigate("Favorite Cities");
-           alert("City Deleted from Favorite");
-
+            const cityQuery = await db
+              .collection("favoriteCities")
+              .where("userID", "==", uid)
+              .where("cityID", "==", props.route.params.id)
+              .get();
+            cityQuery.forEach((doc) => {
+              console.log(doc.data().cityName);
+              doc.ref.delete();
+            });
+            dispatchHandler();
+            navigation.navigate("Favorite Cities");
+            alert("City Deleted from Favorite");
           }}
         >
           <Text style={[styles.buttonText, { marginTop: 10 }]}>

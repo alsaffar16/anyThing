@@ -30,6 +30,7 @@
     "expo-location": "~12.0.4",
     "expo-status-bar": "~1.0.4",
     "firebase": "^8.6.2",
+    "firebase-functions": "^3.14.1",
     "fuse.js": "^6.4.6",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -55,7 +56,11 @@
     "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0"
+    "@babel/core": "^7.9.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.27.0",
+    "eslint-config-eslint": "^7.0.0",
+    "eslint-plugin-react": "^7.24.0"
   },
   "private": true
 }
